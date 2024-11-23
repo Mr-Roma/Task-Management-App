@@ -1,3 +1,18 @@
+buildscript {
+    ext.kotlin_version = "1.8.22" // Use the latest compatible version
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:8.1.1"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.gms:google-services:4.3.15' // Ensure this is up-to-date
+    }
+}
+
+
+
 allprojects {
     repositories {
         google()
@@ -8,6 +23,16 @@ allprojects {
 rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
+    afterEvaluate { project ->
+        if (project.hasProperty("android")) {
+            configurations.all {
+                resolutionStrategy {
+                    force "org.jetbrains.kotlin:kotlin-stdlib:1.8.22"
+                    force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22"
+                }
+            }
+        }
+    }
 }
 subprojects {
     project.evaluationDependsOn(":app")

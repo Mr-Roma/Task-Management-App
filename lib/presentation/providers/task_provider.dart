@@ -1,39 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/task_entity.dart';
 
 class TaskProvider with ChangeNotifier {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   final List<TaskEntity> _tasks = [];
 
   List<TaskEntity> get tasks => List.unmodifiable(_tasks);
 
-  void addTask(TaskEntity task) {
-    _tasks.add(task);
-    notifyListeners();
-  }
-
-  void updateTask(String taskId, TaskEntity updatedTask) {
-    final index = _tasks.indexWhere((task) => task.id == taskId);
-    if (index != -1) {
-      _tasks[index] = updatedTask;
+  /// Add a new task to Firestore and update the local list
+  Future<void> addTask(TaskEntity task) async {
+    try {
+      await _firestore.collection('tasks').doc(task.id).set(task.toJson());
+      _tasks.add(task);
       notifyListeners();
+    } catch (e) {
+      throw Exception('Failed to add task: $e');
     }
   }
 
-  void deleteTask(String taskId) {
-    _tasks.removeWhere((task) => task.id == taskId);
-    notifyListeners();
+  /// Update an existing task in Firestore and the local list
+  Future<void> updateTask(String taskId, TaskEntity updatedTask) async {
+    try {
+      await _firestore
+          .collection('tasks')
+          .doc(taskId)
+          .update(updatedTask.toJson());
+      final index = _tasks.indexWhere((task) => task.id == taskId);
+      if (index != -1) {
+        _tasks[index] = updatedTask;
+        notifyListeners();
+      }
+    } catch (e) {
+      throw Exception('Failed to update task: $e');
+    }
   }
 
-  TaskEntity? getTaskById(String taskId) {
-    return _tasks.firstWhere((task) => task.id == taskId,
-        orElse: () => TaskEntity(
-              id: '',
-              title: '',
-              description: '',
-              createdDate: DateTime.now(),
-              dueDate: DateTime.now(),
-              status: '',
-              priority: '',
-            ));
+  /// Delete a task from Firestore and the local list
+  Future<void> deleteTask(String id) async {
+    try {
+      await _firestore.collection('tasks').doc(id).delete();
+      _tasks.removeWhere((task) => task.id == id);
+      notifyListeners();
+    } catch (e) {
+      throw Exception('Failed to delete task: $e');
+    }
+  }
+
+  /// Fetch tasks from Firestore and update the local list
+  Future<void> fetchTasks() async {
+    try {
+      final querySnapshot = await _firestore.collection('tasks').get();
+      _tasks.clear();
+      for (var doc in querySnapshot.docs) {
+        _tasks.add(TaskEntity.fromJson(doc.data()));
+      }
+      notifyListeners();
+    } catch (e) {
+      throw Exception('Failed to fetch tasks: $e');
+    }
   }
 }

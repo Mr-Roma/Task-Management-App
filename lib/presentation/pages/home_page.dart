@@ -1,33 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_management_app/presentation/providers/task_provider.dart';
-import 'package:task_management_app/presentation/widgets/task_card.dart';
+import '../providers/task_provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<TaskProvider>(context, listen: false).fetchTasks();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final tasks = Provider.of<TaskProvider>(context).tasks;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Task Management'),
-      ),
+      appBar: AppBar(title: Text('Task Management')),
       body: ListView.builder(
-        itemCount: 10, // Example
+        itemCount: tasks.length,
         itemBuilder: (context, index) {
-          return TaskCard(
-            taskTitle: 'Task $index',
+          final task = tasks[index];
+          return ListTile(
+            title: Text(task.title),
+            subtitle: Text(task.description),
             trailing: IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
-                Provider.of<TaskProvider>(context, listen: false).deleteTask(
-                    index.toString()); // Assuming task.id is index for example
+                Provider.of<TaskProvider>(context, listen: false)
+                    .deleteTask(task.id);
               },
             ),
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                '/update',
+                arguments: task.id,
+              );
+            },
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to Task Creation Page
+          Navigator.pushNamed(context, '/create');
         },
         child: Icon(Icons.add),
       ),
