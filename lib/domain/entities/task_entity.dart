@@ -1,11 +1,11 @@
 class TaskEntity {
-  final String id; // Firestore Document ID
+  final String id;
   final String title;
   final String description;
   final DateTime createdDate;
   final DateTime dueDate;
-  final String status; // e.g., "TODO", "In Progress", "Done"
-  final String priority; // e.g., "Low", "Medium", "High"
+  final String status;
+  final String priority;
 
   TaskEntity({
     required this.id,
@@ -17,7 +17,6 @@ class TaskEntity {
     required this.priority,
   });
 
-  // Convert to JSON for Firestore
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -32,18 +31,13 @@ class TaskEntity {
 
   factory TaskEntity.fromJson(Map<String, dynamic> json) {
     return TaskEntity(
-      id: json['id'] ?? '', // Provide a default empty string for null id
-      title: json['title'] ?? 'Untitled Task', // Provide a default title
-      description:
-          json['description'] ?? 'No description', // Default description
-      createdDate: json['createdDate'] != null
-          ? DateTime.parse(json['createdDate'])
-          : DateTime.now(), // Default to current time
-      dueDate: json['dueDate'] != null
-          ? DateTime.parse(json['dueDate'])
-          : DateTime.now(), // Default to current time
-      status: json['status'] ?? 'TODO', // Default status
-      priority: json['priority'] ?? 'Medium', // Default priority
+      id: json['id'] as String,
+      title: json['title'] as String,
+      description: json['description'] as String,
+      createdDate: DateTime.parse(json['createdDate'] as String),
+      dueDate: DateTime.parse(json['dueDate'] as String),
+      status: json['status'] as String,
+      priority: json['priority'] as String,
     );
   }
 }

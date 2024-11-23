@@ -71,3 +71,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 >>>>>>> 2213083 (Initial commit of Task Management App)
+
+
+# .gitignore
+.env
