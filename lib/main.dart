@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:task_management_app/presentation/pages/create_task_page.dart';
-import 'package:task_management_app/presentation/pages/update_task_page.dart';
 import 'presentation/providers/task_provider.dart';
 import 'presentation/pages/home_page.dart';
 import 'package:provider/provider.dart';
@@ -30,8 +28,8 @@ class TaskManagementApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
-        '/create': (context) => CreateTaskPage(),
-        '/update': (context) => UpdateTaskPage(),
+        // '/create': (context) => CreateTaskPage(),
+        // '/update': (context) => UpdateTaskPage(),
       },
     );
   }

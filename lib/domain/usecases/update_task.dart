@@ -1,20 +1,19 @@
-// Create task dialog
+// Update task dialog
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:task_management_app/domain/entities/task_entity.dart';
 import 'package:task_management_app/presentation/providers/task_provider.dart';
-import 'package:uuid/uuid.dart';
 
-void showCreateTaskDialog(BuildContext context) {
+void showUpdateTaskDialog(BuildContext context, TaskEntity task) {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  final _titleController = TextEditingController(text: task.title);
+  final _descriptionController = TextEditingController(text: task.description);
 
   showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text('Create Task'),
+        title: Text('Update Task'),
         content: Form(
           key: _formKey,
           child: Column(
@@ -42,19 +41,19 @@ void showCreateTaskDialog(BuildContext context) {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    final newTask = TaskEntity(
-                      id: Uuid().v4(), // Generate a unique ID
+                    final updatedTask = TaskEntity(
+                      id: task.id, // Keep the same ID for the task
                       title: _titleController.text,
                       description: _descriptionController.text,
-                      createdDate: DateTime.now(),
-                      dueDate: DateTime.now().add(Duration(days: 7)),
-                      status: 'pending',
-                      priority: 'low',
+                      createdDate: task.createdDate,
+                      dueDate: task.dueDate,
+                      status: task.status,
+                      priority: task.priority,
                     );
 
-                    // Add the task to the provider and close the dialog
+                    // Update the task in the provider and close the dialog
                     Provider.of<TaskProvider>(context, listen: false)
-                        .addTask(newTask)
+                        .updateTask(task.id, updatedTask)
                         .then((_) {
                       Navigator.of(context).pop(); // Close the dialog
                     }).catchError((error) {
@@ -64,7 +63,7 @@ void showCreateTaskDialog(BuildContext context) {
                     });
                   }
                 },
-                child: Text('Create Task'),
+                child: Text('Update Task'),
               ),
             ],
           ),
