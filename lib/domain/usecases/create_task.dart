@@ -14,7 +14,10 @@ void showCreateTaskDialog(BuildContext context) {
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text('Create Task'),
+        title: Text(
+          'Create Task',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: Form(
           key: _formKey,
           child: Column(
@@ -40,6 +43,9 @@ void showCreateTaskDialog(BuildContext context) {
               ),
               SizedBox(height: 20),
               ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.blue),
+                ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     final newTask = TaskEntity(
@@ -64,7 +70,10 @@ void showCreateTaskDialog(BuildContext context) {
                     });
                   }
                 },
-                child: Text('Create Task'),
+                child: Text(
+                  'Create Task',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),

@@ -12,11 +12,25 @@ class TaskProvider with ChangeNotifier {
   /// Add a new task to Firestore and update the local list
   Future<void> addTask(TaskEntity task) async {
     try {
-      await _firestore.collection('tasks').doc(task.id).set(task.toJson());
+      await _firestore
+          .collection('tasks')
+          .doc(task.id.toString())
+          .set(task.toJson());
       _tasks.add(task);
       notifyListeners();
     } catch (e) {
       throw Exception('Failed to add task: $e');
+    }
+  }
+
+  void toggleTodayTask(String taskId) {
+    final taskIndex = _tasks.indexWhere((task) => task.id == taskId);
+    if (taskIndex != -1) {
+      // Example logic to toggle the 'isTodayTask' or similar property
+      // Update the logic according to your task model
+      final task = _tasks[taskIndex];
+      // Perform your toggle operation here
+      notifyListeners();
     }
   }
 

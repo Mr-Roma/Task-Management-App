@@ -13,7 +13,10 @@ void showUpdateTaskDialog(BuildContext context, TaskEntity task) {
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text('Update Task'),
+        title: Text(
+          'Update Task',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: Form(
           key: _formKey,
           child: Column(
@@ -39,6 +42,9 @@ void showUpdateTaskDialog(BuildContext context, TaskEntity task) {
               ),
               SizedBox(height: 20),
               ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.blue),
+                ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     final updatedTask = TaskEntity(
@@ -63,7 +69,10 @@ void showUpdateTaskDialog(BuildContext context, TaskEntity task) {
                     });
                   }
                 },
-                child: Text('Update Task'),
+                child: Text(
+                  'Update Task',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_management_app/domain/usecases/create_task.dart';
+import 'package:task_management_app/data/models/task_model.dart';
 import 'package:task_management_app/domain/usecases/update_task.dart';
 import 'package:task_management_app/presentation/widgets/build_task.dart';
 import '../providers/task_provider.dart';
@@ -17,9 +17,24 @@ class _HomePageState extends State<HomePage> {
     Provider.of<TaskProvider>(context, listen: false).fetchTasks();
   }
 
+  double calculateProgress(List<Task> tasks) {
+    if (tasks.isEmpty) return 0.0;
+
+    int completedTasks = tasks.where((task) => task.isCompleted).length;
+    return completedTasks / tasks.length;
+  }
+
   @override
   Widget build(BuildContext context) {
     final tasks = Provider.of<TaskProvider>(context).tasks;
+    // Update the tasks and calculate progress dynamically
+    final todayTasks = tasks.where((task) => task.isTodayTask).toList();
+    final completedTasks =
+        todayTasks.where((task) => task.isCompleted).toList();
+    double progress = todayTasks.isNotEmpty
+        ? (completedTasks.length / todayTasks.length)
+        : 0.0;
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: SafeArea(
@@ -109,18 +124,21 @@ class _HomePageState extends State<HomePage> {
                             SizedBox(
                               width: 80,
                               height: 80,
-                              child: Stack(
+                              child: Column(
                                 children: [
                                   CircularProgressIndicator(
-                                    value: 0.85,
+                                    value: progress,
                                     strokeWidth: 8,
                                     backgroundColor: Colors.white24,
                                     valueColor: AlwaysStoppedAnimation<Color>(
                                         Colors.white),
                                   ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
                                   Center(
                                     child: Text(
-                                      '85%',
+                                      '${(progress * 100).toInt()}%',
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
@@ -175,113 +193,98 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       SizedBox(height: 12),
-                      // Changed this part to use Column instead of nested ListView
-                      // Replace the tasks.map section with this:
-                      ...tasks
-                          .map((task) => Padding(
-                                padding: const EdgeInsets.only(bottom: 12.0),
-                                child: Container(
-                                  padding: EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(16),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.05),
-                                        blurRadius: 8,
-                                        offset: Offset(0, 4),
-                                      ),
-                                    ],
+
+                      ...tasks.map((task) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: Container(
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 8,
+                                    offset: Offset(0, 4),
                                   ),
-                                  child: Row(
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  // Folder icon container
+                                  Container(
+                                    padding: EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child:
+                                        Icon(Icons.folder, color: Colors.blue),
+                                  ),
+                                  SizedBox(width: 16),
+                                  // Task details
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          task.title,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text(
+                                          task.description,
+                                          style: TextStyle(
+                                            color: Colors.grey[600],
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Actions
+                                  Row(
                                     children: [
-                                      // Folder icon container
-                                      Container(
-                                        padding: EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue.withOpacity(0.1),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
+                                      IconButton(
+                                        icon: Icon(
+                                          task.isTodayTask
+                                              ? Icons.check_circle
+                                              : Icons.circle_outlined,
+                                          color: task.isTodayTask
+                                              ? Colors.green
+                                              : Colors.grey,
                                         ),
-                                        child: Icon(Icons.folder,
-                                            color: Colors.blue),
+                                        onPressed: () {
+                                          Provider.of<TaskProvider>(context,
+                                                  listen: false)
+                                              .toggleTodayTask(task.id);
+                                        },
                                       ),
-                                      SizedBox(width: 16),
-                                      // Task details
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              task.title,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                            SizedBox(height: 4),
-                                            Text(
-                                              task.description,
-                                              style: TextStyle(
-                                                color: Colors.grey[600],
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                      IconButton(
+                                        icon: Icon(Icons.edit,
+                                            color: Colors.grey[600]),
+                                        onPressed: () =>
+                                            showUpdateTaskDialog(context, task),
                                       ),
-                                      // Actions
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Container(
-                                            width: 40,
-                                            height: 40,
-                                            padding: EdgeInsets.all(1),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Colors.blue.withOpacity(0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
-                                            ),
-                                            child: IconButton(
-                                              icon: Icon(Icons.edit,
-                                                  color: Colors.grey[600]),
-                                              onPressed: () =>
-                                                  showUpdateTaskDialog(
-                                                      context, task),
-                                            ),
-                                          ),
-                                          SizedBox(width: 8),
-                                          Container(
-                                            width: 40,
-                                            height: 40,
-                                            padding: EdgeInsets.all(1),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Colors.blue.withOpacity(0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
-                                            ),
-                                            child: IconButton(
-                                              icon: Icon(Icons.delete,
-                                                  color: Colors.red),
-                                              onPressed: () {
-                                                Provider.of<TaskProvider>(
-                                                        context,
-                                                        listen: false)
-                                                    .deleteTask(task.id);
-                                              },
-                                            ),
-                                          ),
-                                        ],
+                                      IconButton(
+                                        icon: Icon(Icons.delete,
+                                            color: Colors.red),
+                                        onPressed: () {
+                                          Provider.of<TaskProvider>(context,
+                                                  listen: false)
+                                              .deleteTask(task.id);
+                                        },
                                       ),
                                     ],
                                   ),
-                                ),
-                              ))
-                          .toList(),
+                                ],
+                              ),
+                            ),
+                          ))
                     ],
                   ),
                 ),
@@ -290,52 +293,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: InkWell(
-              child: GestureDetector(
-                onTap: () {
-                  showCreateTaskDialog(context);
-                },
-                child: Container(
-                  width: 45,
-                  height: 45,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF7E57C2),
-                        Color(0xFF673AB7),
-                      ],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xFF673AB7).withOpacity(0.3),
-                        spreadRadius: 2,
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Icon(Icons.add, color: Colors.white, size: 32),
-                ),
-              ),
-            ),
-            label: 'Add',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-      ),
     );
   }
-
-  // Your existing _buildProgressCard and _buildTaskGroup methods remain the same
 }

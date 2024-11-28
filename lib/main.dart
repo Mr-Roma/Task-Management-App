@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:task_management_app/firebase_options.dart';
+import 'package:task_management_app/presentation/auth/auth.dart';
 import 'presentation/providers/task_provider.dart';
-import 'presentation/pages/home_page.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
     MultiProvider(
       providers: [
@@ -27,7 +30,7 @@ class TaskManagementApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: Colors.blue),
       initialRoute: '/',
       routes: {
-        '/': (context) => HomePage(),
+        '/': (context) => AuthPage(),
         // '/create': (context) => CreateTaskPage(),
         // '/update': (context) => UpdateTaskPage(),
       },

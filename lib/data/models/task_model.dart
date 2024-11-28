@@ -1,33 +1,25 @@
-import 'package:task_management_app/domain/entities/task_entity.dart';
+class Task {
+  final String id;
+  final String title;
+  final String description;
+  final bool isCompleted;
+  final bool isTodayTask;
 
-class TaskModel extends TaskEntity {
-  TaskModel({
-    required String id,
-    required String title,
-    required String description,
-    required DateTime createdDate,
-    required DateTime dueDate,
-    required String status,
-    required String priority,
-  }) : super(
-          id: id,
-          title: title,
-          description: description,
-          createdDate: createdDate,
-          dueDate: dueDate,
-          status: status,
-          priority: priority,
-        );
+  Task({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.isCompleted,
+    required this.isTodayTask,
+  });
 
-  factory TaskModel.fromJson(Map<String, dynamic> json) {
-    return TaskModel(
+  factory Task.fromJson(Map<String, dynamic> json) {
+    return Task(
       id: json['id'],
       title: json['title'],
       description: json['description'],
-      createdDate: DateTime.parse(json['createdDate']),
-      dueDate: DateTime.parse(json['dueDate']),
-      status: json['status'],
-      priority: json['priority'],
+      isCompleted: json['isCompleted'],
+      isTodayTask: json['isTodayTask'],
     );
   }
 
@@ -36,10 +28,8 @@ class TaskModel extends TaskEntity {
       'id': id,
       'title': title,
       'description': description,
-      'createdDate': createdDate.toIso8601String(),
-      'dueDate': dueDate.toIso8601String(),
-      'status': status,
-      'priority': priority,
+      'isCompleted': isCompleted,
+      'isTodayTask': isTodayTask,
     };
   }
 }

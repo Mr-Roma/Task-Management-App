@@ -17,6 +17,18 @@ class TaskEntity {
     required this.priority,
   });
 
+  // Getter for checking if the task is today's task
+  bool get isTodayTask {
+    final now = DateTime.now();
+    return dueDate.year == now.year &&
+        dueDate.month == now.month &&
+        dueDate.day == now.day;
+  }
+
+  // Getter for checking if the task is completed
+  bool get isCompleted => status.toLowerCase() == 'completed';
+
+  // Convert to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -29,6 +41,7 @@ class TaskEntity {
     };
   }
 
+  // Factory constructor for creating TaskEntity from JSON
   factory TaskEntity.fromJson(Map<String, dynamic> json) {
     return TaskEntity(
       id: json['id'] as String,
@@ -38,6 +51,28 @@ class TaskEntity {
       dueDate: DateTime.parse(json['dueDate'] as String),
       status: json['status'] as String,
       priority: json['priority'] as String,
+    );
+  }
+
+  // CopyWith method for creating modified copies
+  TaskEntity copyWith({
+    String? id,
+    String? title,
+    String? description,
+    DateTime? createdDate,
+    DateTime? dueDate,
+    String? status,
+    String? priority,
+    required bool isTodayTask,
+  }) {
+    return TaskEntity(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      createdDate: createdDate ?? this.createdDate,
+      dueDate: dueDate ?? this.dueDate,
+      status: status ?? this.status,
+      priority: priority ?? this.priority,
     );
   }
 }
