@@ -1,23 +1,25 @@
-class TaskEntity {
-  final String id;
-  final String title;
-  final String description;
+import 'package:task_management_app/models/taskbase.dart';
+
+class TaskEntity extends TaskBase {
   final DateTime createdDate;
   final DateTime dueDate;
   final String status;
   final String priority;
 
   TaskEntity({
-    required this.id,
-    required this.title,
-    required this.description,
+    required String id,
+    required String title,
+    required String description,
     required this.createdDate,
     required this.dueDate,
     required this.status,
     required this.priority,
-  });
+  }) : super(id: id, title: title, description: description);
 
-  // Getter for checking if the task is today's task
+  @override
+  bool get isCompleted => status.toLowerCase() == 'completed';
+
+  @override
   bool get isTodayTask {
     final now = DateTime.now();
     return dueDate.year == now.year &&
@@ -25,10 +27,7 @@ class TaskEntity {
         dueDate.day == now.day;
   }
 
-  // Getter for checking if the task is completed
-  bool get isCompleted => status.toLowerCase() == 'completed';
-
-  // Convert to JSON
+  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -41,7 +40,7 @@ class TaskEntity {
     };
   }
 
-  // Factory constructor for creating TaskEntity from JSON
+  /// Define the `fromJson` method
   factory TaskEntity.fromJson(Map<String, dynamic> json) {
     return TaskEntity(
       id: json['id'] as String,
@@ -51,28 +50,6 @@ class TaskEntity {
       dueDate: DateTime.parse(json['dueDate'] as String),
       status: json['status'] as String,
       priority: json['priority'] as String,
-    );
-  }
-
-  // CopyWith method for creating modified copies
-  TaskEntity copyWith({
-    String? id,
-    String? title,
-    String? description,
-    DateTime? createdDate,
-    DateTime? dueDate,
-    String? status,
-    String? priority,
-    required bool isTodayTask,
-  }) {
-    return TaskEntity(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      createdDate: createdDate ?? this.createdDate,
-      dueDate: dueDate ?? this.dueDate,
-      status: status ?? this.status,
-      priority: priority ?? this.priority,
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/entities/task_entity.dart';
+import '../../models/task_entity.dart';
 
 class TaskProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

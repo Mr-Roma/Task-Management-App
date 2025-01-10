@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:task_management_app/domain/usecases/create_task.dart';
-import 'package:task_management_app/presentation/pages/home_page.dart';
-import 'package:task_management_app/presentation/pages/profile_page.dart';
+import 'package:task_management_app/views/dialogs/create_task.dart';
+
+import 'package:task_management_app/views/pages/home_page.dart';
+import 'package:task_management_app/views/pages/profile_page.dart';
 
 class BottomNavbar extends StatefulWidget {
   const BottomNavbar({Key? key}) : super(key: key);

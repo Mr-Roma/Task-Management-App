@@ -1,8 +1,7 @@
-// Create task dialog
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_management_app/domain/entities/task_entity.dart';
-import 'package:task_management_app/presentation/providers/task_provider.dart';
+import 'package:task_management_app/controllers/task_controller.dart';
+import 'package:task_management_app/models/task_entity.dart';
 import 'package:uuid/uuid.dart';
 
 void showCreateTaskDialog(BuildContext context) {
@@ -58,10 +57,10 @@ void showCreateTaskDialog(BuildContext context) {
                       priority: 'low',
                     );
 
-                    // Add the task to the provider and close the dialog
-                    Provider.of<TaskProvider>(context, listen: false)
-                        .addTask(newTask)
-                        .then((_) {
+                    // Add the task using TaskController
+                    final taskController =
+                        Provider.of<TaskController>(context, listen: false);
+                    taskController.addTask(newTask).then((_) {
                       Navigator.of(context).pop(); // Close the dialog
                     }).catchError((error) {
                       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:task_management_app/presentation/auth/login_page.dart';
-import 'package:task_management_app/presentation/auth/register_page.dart';
+import 'package:task_management_app/views/auth/login_page.dart';
+import 'package:task_management_app/views/auth/register_page.dart';
 
 class LoginOrRegister extends StatefulWidget {
   const LoginOrRegister({super.key});

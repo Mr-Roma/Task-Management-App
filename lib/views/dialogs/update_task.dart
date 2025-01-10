@@ -1,8 +1,7 @@
-// Update task dialog
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_management_app/domain/entities/task_entity.dart';
-import 'package:task_management_app/presentation/providers/task_provider.dart';
+import 'package:task_management_app/controllers/task_controller.dart'; // Import TaskController
+import 'package:task_management_app/models/task_entity.dart'; // Import TaskEntity
 
 void showUpdateTaskDialog(BuildContext context, TaskEntity task) {
   final _formKey = GlobalKey<FormState>();
@@ -13,10 +12,7 @@ void showUpdateTaskDialog(BuildContext context, TaskEntity task) {
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text(
-          'Update Task',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: Text('Update Task'),
         content: Form(
           key: _formKey,
           child: Column(
@@ -24,10 +20,7 @@ void showUpdateTaskDialog(BuildContext context, TaskEntity task) {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: InputDecoration(labelText: 'Title'),
                 validator: (value) => value == null || value.isEmpty
                     ? 'Title cannot be empty'
                     : null,
@@ -35,16 +28,10 @@ void showUpdateTaskDialog(BuildContext context, TaskEntity task) {
               SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: InputDecoration(
-                  labelText: 'Description',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: InputDecoration(labelText: 'Description'),
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.blue),
-                ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     final updatedTask = TaskEntity(
@@ -57,10 +44,10 @@ void showUpdateTaskDialog(BuildContext context, TaskEntity task) {
                       priority: task.priority,
                     );
 
-                    // Update the task in the provider and close the dialog
-                    Provider.of<TaskProvider>(context, listen: false)
-                        .updateTask(task.id, updatedTask)
-                        .then((_) {
+                    // Access TaskController using the correct context
+                    final taskController =
+                        Provider.of<TaskController>(context, listen: false);
+                    taskController.updateTask(updatedTask).then((_) {
                       Navigator.of(context).pop(); // Close the dialog
                     }).catchError((error) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -69,10 +56,7 @@ void showUpdateTaskDialog(BuildContext context, TaskEntity task) {
                     });
                   }
                 },
-                child: Text(
-                  'Update Task',
-                  style: TextStyle(color: Colors.white),
-                ),
+                child: Text('Update Task'),
               ),
             ],
           ),

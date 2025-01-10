@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:task_management_app/presentation/auth/login_or_register.dart';
-import 'package:task_management_app/presentation/widgets/bottom_navbar_menu.dart';
+import 'package:task_management_app/views/auth/login_or_register.dart';
+import 'package:task_management_app/views/widgets/bottom_navbar_menu.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});

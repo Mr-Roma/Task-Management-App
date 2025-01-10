@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_management_app/data/models/task_model.dart';
-import 'package:task_management_app/domain/usecases/update_task.dart';
-import 'package:task_management_app/presentation/widgets/build_task.dart';
-import '../providers/task_provider.dart';
+import 'package:task_management_app/controllers/task_controller.dart'; // Import TaskController
+import 'package:task_management_app/models/task_entity.dart'; // Import TaskEntity
+import 'package:task_management_app/views/dialogs/update_task.dart'; // Import update_task dialog
+import 'package:task_management_app/views/widgets/build_task.dart'; // Import BuildTask widget
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,10 +14,12 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    Provider.of<TaskProvider>(context, listen: false).fetchTasks();
+    // Fetch tasks when the page is initialized
+    final taskController = Provider.of<TaskController>(context, listen: false);
+    taskController.fetchTasks();
   }
 
-  double calculateProgress(List<Task> tasks) {
+  double calculateProgress(List<TaskEntity> tasks) {
     if (tasks.isEmpty) return 0.0;
 
     int completedTasks = tasks.where((task) => task.isCompleted).length;
@@ -26,7 +28,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final tasks = Provider.of<TaskProvider>(context).tasks;
+    final taskController = Provider.of<TaskController>(context);
+    final tasks = taskController.tasks;
+
     // Update the tasks and calculate progress dynamically
     final todayTasks = tasks.where((task) => task.isTodayTask).toList();
     final completedTasks =
@@ -259,9 +263,7 @@ class _HomePageState extends State<HomePage> {
                                               : Colors.grey,
                                         ),
                                         onPressed: () {
-                                          Provider.of<TaskProvider>(context,
-                                                  listen: false)
-                                              .toggleTodayTask(task.id);
+                                          // taskController.toggleTodayTask(task.id);
                                         },
                                       ),
                                       IconButton(
@@ -274,9 +276,7 @@ class _HomePageState extends State<HomePage> {
                                         icon: Icon(Icons.delete,
                                             color: Colors.red),
                                         onPressed: () {
-                                          Provider.of<TaskProvider>(context,
-                                                  listen: false)
-                                              .deleteTask(task.id);
+                                          taskController.deleteTask(task.id);
                                         },
                                       ),
                                     ],
