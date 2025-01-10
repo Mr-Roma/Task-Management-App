@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:task_management_app/views/auth/login_page.dart';
-import 'package:task_management_app/views/auth/register_page.dart';
+import 'package:task_management_app/views/auth/login_page.dart'; // Import LoginPage
+import 'package:task_management_app/views/auth/register_page.dart'; // Import RegisterPage
 
 class LoginOrRegister extends StatefulWidget {
   const LoginOrRegister({super.key});
@@ -12,7 +12,7 @@ class LoginOrRegister extends StatefulWidget {
 class _LoginOrRegisterState extends State<LoginOrRegister> {
   bool showLoginPage = true;
 
-  //Toggle between Login and Register Page
+  // Toggle between Login and Register Page
   void togglePages() {
     setState(() {
       showLoginPage = !showLoginPage;

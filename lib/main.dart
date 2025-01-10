@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:task_management_app/controllers/auth_controller.dart';
+import 'package:task_management_app/controllers/profile_controller.dart';
 import 'package:task_management_app/controllers/task_controller.dart';
 import 'package:task_management_app/firebase_options.dart';
 import 'package:task_management_app/views/auth/auth.dart';
@@ -15,6 +17,9 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ProfileController()),
+        ChangeNotifierProvider(create: (_) => TaskController()),
+        ChangeNotifierProvider(create: (_) => AuthController()),
         ChangeNotifierProvider(create: (_) => TaskController()),
       ],
       child: TaskManagementApp(),

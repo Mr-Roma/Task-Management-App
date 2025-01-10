@@ -1,5 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:task_management_app/controllers/auth_controller.dart'; // Import AuthController
 import 'package:task_management_app/views/widgets/button.dart';
 
 class LoginPage extends StatefulWidget {
@@ -16,43 +17,33 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
 
   void signUserIn() async {
+    final authController = Provider.of<AuthController>(context, listen: false);
+    try {
+      await authController.signIn(
+          emailController.text, passwordController.text);
+    } catch (e) {
+      showErrorMessage(e.toString());
+    }
+  }
+
+  void showErrorMessage(String message) {
     showDialog(
       context: context,
       builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
+        return AlertDialog(
+          title: Text('Login Error'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('OK'),
+            ),
+          ],
         );
       },
     );
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text, password: passwordController.text);
-      Navigator.pop(context);
-    } on FirebaseAuthException catch (e) {
-      Navigator.pop(context);
-      // Display error message for wrong email or password
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Login Error'),
-            content: Text(e.code == 'user-not-found'
-                ? 'Incorrect Email!'
-                : 'Incorrect Password!'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    } catch (e) {
-      print("Unexpected error: $e");
-    }
   }
 
   @override
@@ -121,9 +112,10 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       const SizedBox(height: 16),
                       TextField(
+                        controller: emailController,
                         decoration: InputDecoration(
-                          hintText: 'Enter username',
-                          prefixIcon: const Icon(Icons.person_outline,
+                          hintText: 'Enter email',
+                          prefixIcon: const Icon(Icons.email_outlined,
                               color: Colors.grey),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(30),
@@ -135,6 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 16),
                       TextField(
+                        controller: passwordController,
                         obscureText: true,
                         decoration: InputDecoration(
                           hintText: 'Enter password',
@@ -158,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      'Already have an account? ',
+                      'Don\'t have an account? ',
                       style: TextStyle(color: Colors.black87),
                     ),
                     TextButton(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:task_management_app/controllers/auth_controller.dart'; // Import AuthController
 import 'package:task_management_app/controllers/task_controller.dart'; // Import TaskController
 import 'package:task_management_app/models/task_entity.dart'; // Import TaskEntity
 import 'package:task_management_app/views/dialogs/update_task.dart'; // Import update_task dialog
@@ -29,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final taskController = Provider.of<TaskController>(context);
+    final authController = Provider.of<AuthController>(context);
     final tasks = taskController.tasks;
 
     // Update the tasks and calculate progress dynamically
@@ -70,7 +72,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               Text(
-                                'Romario Marcal',
+                                authController.user?.name ?? 'User',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,

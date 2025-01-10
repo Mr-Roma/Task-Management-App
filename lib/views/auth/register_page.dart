@@ -1,5 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:task_management_app/controllers/auth_controller.dart'; // Import AuthController
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
@@ -14,68 +15,38 @@ class _RegisterPageState extends State<RegisterPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final nameController = TextEditingController();
 
   void register() async {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
+    final authController = Provider.of<AuthController>(context, listen: false);
     try {
       if (confirmPasswordController.text == passwordController.text) {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: emailController.text, password: passwordController.text);
-        Navigator.pop(context); // Close loading dialog
-        // Optionally, you can navigate to another screen upon successful registration
+        await authController.signUp(
+          emailController.text,
+          passwordController.text,
+          nameController.text,
+        );
       } else {
-        // Show error message
-        showErrorMessage('password-mismatch');
+        showErrorMessage('Passwords do not match.');
       }
-    } on FirebaseAuthException catch (e) {
-      Navigator.pop(context); // Close loading dialog
-      // Display error message
-      showErrorMessage(e.code);
+    } catch (e) {
+      showErrorMessage(e.toString());
     }
   }
 
-  void showErrorMessage(String errorCode) {
-    String errorMessage;
-    switch (errorCode) {
-      case 'email-already-in-use':
-        errorMessage = 'Email is already in use. Please use a different email.';
-        break;
-      case 'invalid-email':
-        errorMessage = 'Invalid email address. Please enter a valid email.';
-        break;
-      case 'weak-password':
-        errorMessage = 'Password is too weak. Please use a stronger password.';
-        break;
-      case 'password-mismatch':
-        errorMessage =
-            'Passwords do not match. Please enter matching passwords.';
-        break;
-      default:
-        errorMessage = 'An unexpected error occurred. Please try again later.';
-    }
+  void showErrorMessage(String message) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Center(
-            child: Text(
-              errorMessage,
-              style: const TextStyle(color: Colors.black),
-            ),
-          ),
-          actions: <Widget>[
+          title: Text('Registration Error'),
+          content: Text(message),
+          actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog
+                Navigator.pop(context);
               },
-              child: const Text('OK'),
+              child: Text('OK'),
             ),
           ],
         );
@@ -148,24 +119,27 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   child: Column(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF4CAF50),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.image,
-                          color: Colors.white,
-                          size: 32,
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: nameController,
+                        decoration: InputDecoration(
+                          hintText: 'Enter name',
+                          prefixIcon: const Icon(Icons.person_outline,
+                              color: Colors.grey),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey[100],
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
                       TextField(
                         controller: emailController,
                         decoration: InputDecoration(
-                          hintText: 'Enter username',
-                          prefixIcon: const Icon(Icons.person_outline,
+                          hintText: 'Enter email',
+                          prefixIcon: const Icon(Icons.email_outlined,
                               color: Colors.grey),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(30),

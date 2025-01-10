@@ -1,5 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:task_management_app/controllers/auth_controller.dart'; // Import AuthController
+import 'package:task_management_app/controllers/profile_controller.dart'; // Import ProfileController
 import 'package:task_management_app/views/auth/auth.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -10,15 +12,28 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  void singUserOut(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) =>
-            AuthPage())); // Navigate back to the previous screen
+  @override
+  void initState() {
+    super.initState();
+    // Use addPostFrameCallback to ensure the context is available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ProfileController>(context, listen: false).fetchUser();
+    });
+  }
+
+  void signUserOut(BuildContext context) async {
+    final authController = Provider.of<AuthController>(context, listen: false);
+    await authController.signOut();
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => AuthPage()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final profileController = Provider.of<ProfileController>(context);
+    final user = profileController.user;
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
@@ -65,8 +80,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    const Text(
-                      'Romario Marcal',
+                    Text(
+                      user?.name ?? 'User',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -74,7 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '081343568832',
+                      user?.email ?? '',
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontSize: 14,
@@ -154,7 +169,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           actions: <Widget>[
                             TextButton(
                               onPressed: () {
-                                singUserOut(context);
+                                signUserOut(context);
                               },
                               child: Text(
                                 "OK",

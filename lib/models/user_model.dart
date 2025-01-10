@@ -1,15 +1,15 @@
-class User {
+class UserModel {
   final String id;
   final String name;
   final String email;
 
-  User({
+  UserModel({
     required this.id,
     required this.name,
     required this.email,
   });
 
-  // Convert User object to a Map
+  // Convert UserModel object to a Map
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -18,9 +18,9 @@ class User {
     };
   }
 
-  // Create a User object from a Map
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
+  // Create a UserModel object from a Map
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
       id: json['id'],
       name: json['name'],
       email: json['email'],

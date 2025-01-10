@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:task_management_app/views/dialogs/create_task.dart';
-
-import 'package:task_management_app/views/pages/home_page.dart';
-import 'package:task_management_app/views/pages/profile_page.dart';
+import 'package:provider/provider.dart';
+import 'package:task_management_app/controllers/auth_controller.dart'; // Import AuthController
+import 'package:task_management_app/views/dialogs/create_task.dart'; // Import create_task dialog
+import 'package:task_management_app/views/pages/home_page.dart'; // Import HomePage
+import 'package:task_management_app/views/pages/profile_page.dart'; // Import ProfilePage
 
 class BottomNavbar extends StatefulWidget {
   const BottomNavbar({Key? key}) : super(key: key);
@@ -14,9 +15,10 @@ class BottomNavbar extends StatefulWidget {
 class _BottomNavbarState extends State<BottomNavbar> {
   int _pageIndex = 0;
 
+  // List of pages to display
   final List<Widget> _pages = [
     HomePage(),
-    ProfilePage(),
+    HomePage(), // Placeholder for the "Add" button (you can replace this with a different page if needed)
     ProfilePage(),
   ];
 
@@ -34,7 +36,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
         currentIndex: _pageIndex,
         onTap: _onItemTapped,
         backgroundColor: Colors.white,
-        selectedItemColor: Color(0xFF673AB7), // Green color for selected item
+        selectedItemColor: Color(0xFF673AB7), // Purple color for selected item
         unselectedItemColor: Colors.grey, // Grey for unselected items
         showSelectedLabels: true,
         showUnselectedLabels: true,
